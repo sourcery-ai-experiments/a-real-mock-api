@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 
 from functions.read_settings import ReadSettingsFile
 from functions.syncronize import scheduler
+from functions.url_handle import UrlHandler
 
 
 @asynccontextmanager
@@ -27,10 +28,13 @@ async def hello(request: Request):
 @app.api_route("/{path_name:path}", methods=["GET", "POST", "PATCH", "DELETE"])
 async def catch_all(request: Request, path_name: str):
 
+    from_function = await UrlHandler.find_matching_url(path_name)
+
     return {
         "request_method": request.method,
         "path_name": path_name,
         "query_params": request.query_params,
         "headers": request.headers,
         "body": await request.body(),
+        "from_function": from_function,
     }
